@@ -5,7 +5,7 @@ import json
 
 sns_client = boto3.client('sns', region_name='us-east-1')
 
-sns_topic_arn = 'PENDIENTE ARN SNS'
+sns_topic_arn = 'arn:aws:sns:us-east-1:851725303021:HeartbeatTopic'
 
 lamport_clock = 0
 
