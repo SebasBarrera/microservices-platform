@@ -17,8 +17,7 @@ idempotency_table = dynamodb.Table('IdempotencyTable')
 versioned_table = dynamodb.Table('VersionedState')
 write_ahead_log_table = dynamodb.Table('WriteAheadLog')
 
-# Reemplazar con la URL real de la cola SQS suscrita al topic SNS
-queue_url = 'PENDIENTE URL SQS SNS'
+queue_url = 'https://sqs.us-east-1.amazonaws.com/851725303021/ServiceBQueue'
 
 lamport_clock = 0
 
@@ -40,11 +39,9 @@ def receive_messages():
             if 'Item' in resp_idem:
                 print("Evento ya procesado:", event_id)
             else:
-                # Lamport Clock
                 event_clock = sns_message['LamportClock']
                 lamport_clock = max(lamport_clock, event_clock) + 1
                 process_event(sns_message)
-                # Registrar idempotencia
                 idempotency_table.put_item(
                     Item={
                         'RequestID': event_id,
@@ -53,7 +50,6 @@ def receive_messages():
                     }
                 )
 
-        # Borrar mensaje de la cola
         sqs_client.delete_message(
             QueueUrl=queue_url,
             ReceiptHandle=message['ReceiptHandle']
